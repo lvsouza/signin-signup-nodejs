@@ -1,10 +1,9 @@
 import express from "express";
 
+import { routes } from "./routes/Routes";
+
 const app = express();
 
-app.get('/teste', (req, res) => {
-
-    return res.send('Chegou aqui!')
-});
+app.use(routes);
 
 app.listen(3333);
