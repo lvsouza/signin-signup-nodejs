@@ -6,6 +6,8 @@
   "author": "lvsouza",
   "license": "MIT",
   "scripts": {
+    "knex:rollback-all": "knex --knexfile ./src/knexfile.ts migrate:rollback --all",
+    "knex:rollback": "knex --knexfile ./src/knexfile.ts migrate:rollback",
     "knex:migrate": "knex --knexfile ./src/knexfile.ts migrate:latest",
     "start:build": "node ./build/server.js",
     "build": "tsc",
