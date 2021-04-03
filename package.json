@@ -6,6 +6,8 @@
   "author": "lvsouza",
   "license": "MIT",
   "scripts": {
+    "start:build": "node ./build/server.js",
+    "build": "tsc",
     "start": "ts-node-dev ./src/server.ts"
   },
   "dependencies": {
