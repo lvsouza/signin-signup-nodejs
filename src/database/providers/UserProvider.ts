@@ -8,7 +8,18 @@ interface IUserToCreate {
     username?: string,
 }
 const createUser = async (userToCreate: IUserToCreate) => {
-    await Knex(TableNames.user).insert(userToCreate);
+    try {
+        const [insertedUserId] = await Knex(TableNames.user).insert(userToCreate);
+
+        return {
+            id: insertedUserId,
+            name: userToCreate.name,
+            email: userToCreate.email,
+            username: userToCreate.username,
+        };
+    } catch (error) {
+        return "Erro ao inserir o usuário"
+    }
 }
 
 export const UserProvider = {
