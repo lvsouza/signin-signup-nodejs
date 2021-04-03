@@ -6,6 +6,7 @@
   "author": "lvsouza",
   "license": "MIT",
   "scripts": {
+    "knex:migrate": "knex --knexfile ./src/knexfile.ts migrate:latest",
     "start:build": "node ./build/server.js",
     "build": "tsc",
     "start": "ts-node-dev ./src/server.ts"
