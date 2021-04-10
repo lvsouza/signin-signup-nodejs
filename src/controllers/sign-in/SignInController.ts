@@ -1,7 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
+import { celebrate, Joi } from 'celebrate';
 
 import { UserProvider } from '../../database/providers';
+
+const validateSingIn = celebrate({
+    body: Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().min(6).required(),
+    }),
+});
 
 const signIn = async (req: Request, res: Response) => {
     try {
@@ -25,4 +33,5 @@ const signIn = async (req: Request, res: Response) => {
 
 export const SignInController = {
     signIn,
+    validateSingIn,
 }
