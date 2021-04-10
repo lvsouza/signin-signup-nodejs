@@ -15,8 +15,8 @@ const signUp = async (req: Request, res: Response) => {
             return res.status(StatusCodes.CREATED).json(result);
         }
     } catch (error) {
-        console.log(error)
-        return res.status(StatusCodes.BAD_REQUEST).send("Algum erro interno.");
+        console.log(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Algum erro interno.");
     }
 }
 
