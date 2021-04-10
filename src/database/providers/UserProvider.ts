@@ -1,5 +1,6 @@
-import { Knex } from "../connection";
+import { hashPassword } from "../../services";
 import { TableNames } from "../TableNames";
+import { Knex } from "../connection";
 
 interface IUserToCreate {
     name: string;
@@ -9,6 +10,8 @@ interface IUserToCreate {
 }
 const createUser = async (userToCreate: IUserToCreate) => {
     try {
+        userToCreate.password = await hashPassword(userToCreate.password);
+
         const [insertedUserId] = await Knex(TableNames.user).insert(userToCreate);
 
         return {
@@ -18,7 +21,7 @@ const createUser = async (userToCreate: IUserToCreate) => {
             username: userToCreate.username,
         };
     } catch (error) {
-        return "Erro ao inserir o usuário"
+        return "Erro ao inserir o usuário";
     }
 }
 
