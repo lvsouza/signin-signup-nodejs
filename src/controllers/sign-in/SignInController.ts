@@ -6,7 +6,7 @@ import { UserProvider } from '../../database/providers';
 
 const validateSingIn = celebrate({
     body: Joi.object({
-        email: Joi.string().email().required(),
+        email: Joi.string().email().max(200).required(),
         password: Joi.string().min(6).required(),
     }),
 });
