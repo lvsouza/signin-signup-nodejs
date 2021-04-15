@@ -50,7 +50,48 @@ const readUserByEmail = async (email: string): Promise<string | IUserReadResult>
     }
 }
 
+interface IUserReadAllResult {
+    id: number;
+    name: string;
+    email: string,
+    username?: string,
+}
+const readAllUsers = async (): Promise<string | IUserReadAllResult[]> => {
+    try {
+        const users = await Knex(TableNames.user).select(['id', 'name', 'email', 'username']);
+
+        return users || [];
+    } catch (error) {
+        return 'Erro interno';
+    }
+}
+
+interface IUserReadByIdResult {
+    id: number;
+    name: string;
+    email: string,
+    username?: string,
+}
+const readUserById = async (id: number): Promise<string | IUserReadByIdResult> => {
+    try {
+        const user = await Knex(TableNames.user).select('*').where({ id }).first();
+
+        if (!user) return 'Usuário não existe';
+
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            username: user.username,
+        };
+    } catch (error) {
+        return 'Erro interno';
+    }
+}
+
 export const UserProvider = {
     createUser,
+    readAllUsers,
+    readUserById,
     readUserByEmail,
 }
