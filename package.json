@@ -9,7 +9,7 @@
     "knex:rollback-all": "knex --knexfile ./src/knexfile.ts migrate:rollback --all",
     "knex:rollback": "knex --knexfile ./src/knexfile.ts migrate:rollback",
     "knex:migrate": "knex --knexfile ./src/knexfile.ts migrate:latest",
-    "start:build": "node ./build/server.js",
+    "production": "node ./build/server.js",
     "build": "tsc",
     "start": "ts-node-dev ./src/server.ts"
   },
