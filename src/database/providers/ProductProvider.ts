@@ -1,11 +1,13 @@
 import { TableNames } from "../TableNames";
 import { Knex } from "../connection";
+import { IImage } from "./ImageProvider";
 
 export interface IProduct {
   id: number;
   price: string;
   stock: string;
   discount: string;
+  images: IImage[];
   category?: string;
   description?: string;
 }
@@ -60,6 +62,15 @@ const updateById = async (id: number, productToUpdate: IProduct): Promise<string
 
 const deleteById = async (id: number): Promise<string | void> => {
   try {
+    await Knex
+      .delete(TableNames.image)
+      .innerJoin(
+        `${TableNames.productImage}`,
+        `${TableNames.productImage}.imageId`,
+        `${TableNames.image}.id`
+      )
+      .where(`${TableNames.productImage}.productId`, '=', id);
+
     await Knex(TableNames.product)
       .select<IProduct[]>('*')
       .where({ id });
