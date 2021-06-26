@@ -8,9 +8,13 @@ export interface IImage {
   content: string;
 }
 
-const getAll = async (): Promise<string | IImage[]> => {
+const getAll = async (page = 0, limit = 10, search = ''): Promise<string | IImage[]> => {
   try {
-    const images = await Knex(TableNames.image).select<IImage[]>('*');
+    const images = await Knex(TableNames.image)
+      .select<IImage[]>('*')
+      .where('name', 'like', `%${search}%`)
+      .offset(page * limit)
+      .limit(limit);
     return images;
   } catch (error) {
     return 'Erro ao consultar as imagens na base';

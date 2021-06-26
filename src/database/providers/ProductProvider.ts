@@ -1,6 +1,6 @@
 import { TableNames } from "../TableNames";
-import { Knex } from "../connection";
 import { IImage } from "./ImageProvider";
+import { Knex } from "../connection";
 
 export interface IProduct {
   id: number;
@@ -12,11 +12,16 @@ export interface IProduct {
   description?: string;
 }
 
-const getAll = async (): Promise<string | IProduct[]> => {
+const getAll = async (page = 1, limit = 10, search = ''): Promise<string | IProduct[]> => {
   try {
-    const products = await Knex(TableNames.product).select<IProduct[]>('*');
+    const products = await Knex(TableNames.product)
+      .select<IProduct[]>('*')
+      .where('description', 'like', `%${search}%`)
+      .offset((page - 1) * limit)
+      .limit(limit);
     return products;
   } catch (error) {
+    console.log(error)
     return 'Erro ao consultar os produtos na base';
   }
 }
@@ -79,7 +84,17 @@ const deleteById = async (id: number): Promise<string | void> => {
   }
 }
 
+const count = async () => {
+  try {
+    const [{ count }] = await Knex(TableNames.product).count('* as count');
+    return Number(count);
+  } catch (error) {
+    return 'Erro ao acessar a base';
+  }
+}
+
 export const ProductProvider = {
+  count,
   getAll,
   create,
   getById,
