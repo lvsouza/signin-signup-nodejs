@@ -4,9 +4,9 @@ import { Knex } from "../connection";
 
 export interface IProduct {
   id: number;
-  price: string;
-  stock: string;
-  discount: string;
+  price: number;
+  stock: number;
+  discount: number;
   images: IImage[];
   category?: string;
   description?: string;
@@ -41,14 +41,27 @@ const getById = async (id: number): Promise<string | IProduct> => {
   }
 }
 
-const create = async (productToCreate: Omit<IProduct, 'id'>): Promise<string | IProduct> => {
+const create = async ({ images, ...productToCreate }: Omit<IProduct, 'id'>): Promise<string | number> => {
+  const trx = await Knex.transaction();
+
   try {
-    const [insertedId] = await Knex(TableNames.product).insert(productToCreate);
-    return {
-      id: insertedId,
-      ...productToCreate,
-    };
+    const [insertedId] = await trx(TableNames.product).insert(productToCreate);
+
+    if (images.length > 0) {
+      const insertedImagesId = await trx(TableNames.image).insert(images);
+      const relations = insertedImagesId.map(imageId => ({
+        imageId,
+        productId: insertedId,
+      }));
+
+      await trx(TableNames.productImage).insert(relations);
+    }
+
+    trx.commit();
+    return insertedId;
   } catch (error) {
+    trx.rollback();
+    console.log(error);
     return 'Erro ao criar o produto na base';
   }
 }
