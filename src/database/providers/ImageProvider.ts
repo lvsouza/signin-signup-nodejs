@@ -2,7 +2,7 @@ import { TableNames } from "../TableNames";
 import { Knex } from "../connection";
 
 export interface IImage {
-  id: number;
+  id?: number;
   name: string;
   type: string;
   content: string;
