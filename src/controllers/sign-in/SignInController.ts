@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { celebrate, Joi } from 'celebrate';
+import * as jwt from 'jsonwebtoken';
 
 import { UserProvider } from '../../database/providers';
 import { verifyPassword } from '../../services';
@@ -22,7 +23,12 @@ const signIn = async (req: Request, res: Response) => {
         }
 
         if (await verifyPassword(password, user.password)) {
-            return res.status(StatusCodes.OK).json({ accessToken: 'jwt-123456789-jwt' });
+
+            if (!process.env.SECRET) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Algum erro interno.");
+
+            const token = jwt.sign({ uid: user.id }, process.env.SECRET);
+
+            return res.status(StatusCodes.OK).json({ accessToken: token });
         } else {
             return res.status(StatusCodes.UNAUTHORIZED).send('Usuário ou senha são inválidos.');
         }
