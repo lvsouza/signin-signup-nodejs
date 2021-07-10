@@ -19,6 +19,16 @@ const getAll = async (page = 1, limit = 10, search = ''): Promise<string | IProd
       .where('description', 'like', `%${search}%`)
       .offset((page - 1) * limit)
       .limit(limit);
+
+    const allImages = await Knex(TableNames.image)
+      .select('*')
+      .innerJoin(TableNames.productImage, `${TableNames.image}.id`, `${TableNames.productImage}.imageId`)
+      .whereIn(`${TableNames.productImage}.productId`, products.map(product => product.id));
+
+    products.forEach(product => {
+      product.images = allImages.filter(image => image.productId === product.id)
+    });
+
     return products;
   } catch (error) {
     console.log(error)
@@ -69,8 +79,8 @@ const updateById = async (id: number, productToUpdate: Omit<IProduct, 'images'>,
 
   try {
     const success = await trx(TableNames.product)
-    .update(productToUpdate)
-    .where({ id });
+      .update(productToUpdate)
+      .where({ id });
 
     if (success === 0) {
       trx.rollback();
