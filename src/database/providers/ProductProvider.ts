@@ -36,12 +36,24 @@ const getAll = async (page = 1, limit = 10, search = ''): Promise<string | IProd
   }
 }
 
+
 const getById = async (id: number): Promise<string | IProduct | undefined> => {
   try {
     const product = await Knex(TableNames.product)
       .select<IProduct[]>('*')
-      .where({ id })
+      .where(`${TableNames.product}.id`, id)
       .first();
+
+    if (!product) return undefined;
+
+    product.images = await Knex(TableNames.image)
+      .select('*')
+      .whereIn(`id`, function () {
+        this
+          .select('imageId')
+          .from(TableNames.productImage)
+          .where({ productId: id });
+      })
 
     return product;
   } catch (error) {
