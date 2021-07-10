@@ -19,5 +19,7 @@ routes.post('/products', ProductController.validateCreate, ProductController.cre
 routes.get('/products/:id', ProductController.validateGetById, ProductController.getById);
 routes.put('/products/:id', ProductController.validateUpdateById, ProductController.updateById);
 routes.delete('/products/:id', ProductController.validateDeleteById, ProductController.deleteById);
+routes.get('/products-with-first-image', ProductController.validateGetAllWithFirstImage, ProductController.getAllWithFirstImage);
+routes.get('/products-with-first-image/:id', ProductController.validateGetByIdWithFirstImage, ProductController.getByIdWithFirstImage);
 
 export { routes };

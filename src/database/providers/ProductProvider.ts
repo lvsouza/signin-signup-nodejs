@@ -36,6 +36,34 @@ const getAll = async (page = 1, limit = 10, search = ''): Promise<string | IProd
   }
 }
 
+type TProductWithImage = Omit<IProduct, 'images'> & {
+  image: string;
+}
+const getAllWithFirstImage = async (page = 1, limit = 10, search = ''): Promise<string | TProductWithImage[]> => {
+  try {
+    const products = await Knex(TableNames.product)
+      .select<TProductWithImage[]>([
+        `${TableNames.product}.id`,
+        'category',
+        `description`,
+        `discount`,
+        `stock`,
+        `price`,
+        `content as image`
+      ])
+      .innerJoin(TableNames.productImage, `${TableNames.product}.id`, `${TableNames.productImage}.productId`)
+      .innerJoin(TableNames.image, `${TableNames.image}.id`, `${TableNames.productImage}.imageId`)
+      .where('description', 'like', `%${search}%`)
+      .offset((page - 1) * limit)
+      .limit(limit);
+
+    return products;
+  } catch (error) {
+    console.log(error)
+    return 'Erro ao consultar os produtos na base';
+  }
+}
+
 
 const getById = async (id: number): Promise<string | IProduct | undefined> => {
   try {
@@ -54,6 +82,30 @@ const getById = async (id: number): Promise<string | IProduct | undefined> => {
           .from(TableNames.productImage)
           .where({ productId: id });
       })
+
+    return product;
+  } catch (error) {
+    return 'Erro ao consultar o produto na base';
+  }
+}
+
+
+const getByIdWithFirstImage = async (id: number): Promise<string | TProductWithImage | undefined> => {
+  try {
+    const product = await Knex(TableNames.product)
+      .select<TProductWithImage[]>([
+        `${TableNames.product}.id`,
+        'category',
+        `description`,
+        `discount`,
+        `stock`,
+        `price`,
+        `content as image`
+      ])
+      .innerJoin(TableNames.productImage, `${TableNames.product}.id`, `${TableNames.productImage}.productId`)
+      .innerJoin(TableNames.image, `${TableNames.image}.id`, `${TableNames.productImage}.imageId`)
+      .where(`${TableNames.product}.id`, id)
+      .first();
 
     return product;
   } catch (error) {
@@ -196,4 +248,6 @@ export const ProductProvider = {
   getById,
   updateById,
   deleteById,
+  getAllWithFirstImage,
+  getByIdWithFirstImage,
 }
